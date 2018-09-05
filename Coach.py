@@ -118,12 +118,14 @@ class Coach():
             nmcts = MCTS(self.game, self.nnet, self.args)
 
             print('PITTING AGAINST PREVIOUS VERSION')
-            arena = Arena(lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
-                          lambda x: np.argmax(nmcts.getActionProb(x, temp=0)), self.game)
-            pwins, nwins, draws = arena.playGames(self.args.arenaCompare)
+            arena = Arena(lambda x: np.argmax(nmcts.getActionProb(x, temp=0)),
+                          lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
+                          lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
+                          lambda x: np.argmax(pmcts.getActionProb(x, temp=0)), self.game)
+            nwins, p1wins, p2wins, p3wins, draws = arena.playGames(self.args.arenaCompare)
 
-            print('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwins, pwins, draws))
-            if pwins+nwins > 0 and float(nwins)/(pwins+nwins) < self.args.updateThreshold:
+            print('NEW/PREV WINS : %d / %d ; DRAWS : %d' % (nwins, sum([p1wins, p2wins, p3wins]), draws))
+            if sum([nwins, p1wins, p2wins, p3wins]) > 0 and float(nwins)/sum([nwins, p1wins, p2wins, p3wins]) < self.args.updateThreshold:
                 print('REJECTING NEW MODEL')
                 self.nnet.load_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
             else:
