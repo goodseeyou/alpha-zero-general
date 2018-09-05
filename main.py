@@ -1,5 +1,5 @@
 from Coach import Coach
-from othello.OthelloGame import OthelloGame as Game
+from hearts.HeartsGame import HeartsGame as Game
 from othello.pytorch.NNet import NNetWrapper as nn
 from utils import *
 
